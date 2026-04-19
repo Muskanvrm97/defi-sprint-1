@@ -8,6 +8,7 @@ contract MyTokenTest is Test {
     MyToken token;
     address muskan = makeAddr("muskan");
     address prashant = makeAddr("prashant");
+    address helen = makeAddr("helen");
 
     function setUp() public {
         vm.prank(muskan);
@@ -53,6 +54,17 @@ contract MyTokenTest is Test {
     }
 
     function test_TransferFromFailsWithoutApproval() public {
+        vm.prank(prashant);
+        vm.expectRevert("Not enough tokens");
+        token.transferFrom(muskan, prashant, 200 * 10 ** 18);
+    }
+
+    function test_TransferFromFailsIfExceedsAllowance() public {
+        // Muskan approves Prashant for 100 tokens
+        vm.prank(muskan);
+        token.approve(prashant, 100 * 10 ** 18);
+
+        // Prashant tries to take 200 — more than approved
         vm.prank(prashant);
         vm.expectRevert("Not enough tokens");
         token.transferFrom(muskan, prashant, 200 * 10 ** 18);
