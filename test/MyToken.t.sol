@@ -12,7 +12,7 @@ contract MyTokenTest is Test {
 
     function setUp() public {
         vm.prank(muskan);
-        token = new MyToken(1000);
+        token = new MyToken("Bonk", "BK", 1000);
     }
 
     function test_InitialBalance() public view {

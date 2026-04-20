@@ -7,7 +7,7 @@ import "../src/MyToken.sol";
 contract DeployScript is Script {
     function run() public {
         vm.startBroadcast();
-        new MyToken(1000);
+        new MyToken("Bonk", "BK", 1000);
         vm.stopBroadcast();
     }
 }

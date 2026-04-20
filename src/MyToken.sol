@@ -2,13 +2,20 @@
 pragma solidity ^0.8.13;
 
 contract MyToken {
-    string public name = "Muskan Token";
-    string public symbol = "MTK";
+    string public name;
+    string public symbol;
     uint8 public decimals = 18;
     uint256 public totalSupply;
+
     mapping(address => uint256) public balanceOf;
 
-    constructor(uint256 _initialSupply) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _initialSupply
+    ) {
+        name = _name;
+        symbol = _symbol;
         totalSupply = _initialSupply * 10 ** decimals;
         balanceOf[msg.sender] = totalSupply;
     }
