@@ -43,7 +43,7 @@ contract MyToken {
         uint256 amount
     ) public returns (bool) {
         require(balanceOf[from] >= amount);
-        require(allowance[from][msg.sender] >= amount, "Not enough tokens");
+        require(allowance[from][msg.sender] >= amount, "Not approved");
         require(to != address(0), "Cannot send to zero address");
 
         balanceOf[from] -= amount;

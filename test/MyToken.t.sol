@@ -8,7 +8,7 @@ contract MyTokenTest is Test {
     MyToken token;
     address muskan = makeAddr("muskan");
     address prashant = makeAddr("prashant");
-    address helen = makeAddr("helen");
+    address amm = makeAddr("amm");
 
     function setUp() public {
         vm.prank(muskan);
@@ -36,37 +36,30 @@ contract MyTokenTest is Test {
 
     function test_ApproveAndTransferFrom() public {
         vm.prank(muskan);
+        token.approve(amm, 300 * 10 ** 18);
 
-        token.approve(prashant, 300 * 10 ** 18);
+        assertEq(token.allowance(muskan, amm), 300 * 10 ** 18);
 
-        assertEq(token.allowance(muskan, prashant), 300 * 10 ** 18);
+        vm.prank(amm);
+        token.transferFrom(muskan, amm, 200 * 10 ** 18);
 
-        vm.prank(prashant);
-
-        token.transferFrom(muskan, prashant, 200 * 10 ** 18);
-
-        // Check balances
         assertEq(token.balanceOf(muskan), 800 * 10 ** 18);
-        assertEq(token.balanceOf(prashant), 200 * 10 ** 18);
-
-        // Check allowance decreased
-        assertEq(token.allowance(muskan, prashant), 100 * 10 ** 18);
+        assertEq(token.balanceOf(amm), 200 * 10 ** 18);
+        assertEq(token.allowance(muskan, amm), 100 * 10 ** 18);
     }
 
     function test_TransferFromFailsWithoutApproval() public {
-        vm.prank(prashant);
-        vm.expectRevert("Not enough tokens");
-        token.transferFrom(muskan, prashant, 200 * 10 ** 18);
+        vm.prank(amm);
+        vm.expectRevert("Not approved");
+        token.transferFrom(muskan, amm, 100 * 10 ** 18);
     }
 
     function test_TransferFromFailsIfExceedsAllowance() public {
-        // Muskan approves Prashant for 100 tokens
         vm.prank(muskan);
-        token.approve(prashant, 100 * 10 ** 18);
+        token.approve(amm, 100 * 10 ** 18);
 
-        // Prashant tries to take 200 — more than approved
-        vm.prank(prashant);
-        vm.expectRevert("Not enough tokens");
-        token.transferFrom(muskan, prashant, 200 * 10 ** 18);
+        vm.prank(amm);
+        vm.expectRevert("Not approved");
+        token.transferFrom(muskan, amm, 200 * 10 ** 18);
     }
 }
