@@ -44,6 +44,29 @@ contract MyToken {
         return true;
     }
 
+    // Atomic allowance adjustments — safer than approve() for changing a
+    // non-zero allowance, because they adjust the current value instead of
+    // blindly overwriting it (see the approve race condition).
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    ) public returns (bool) {
+        allowance[msg.sender][spender] += addedValue;
+        emit Approval(msg.sender, spender, allowance[msg.sender][spender]);
+        return true;
+    }
+
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    ) public returns (bool) {
+        uint256 current = allowance[msg.sender][spender];
+        require(current >= subtractedValue, "decrease below zero");
+        allowance[msg.sender][spender] = current - subtractedValue;
+        emit Approval(msg.sender, spender, allowance[msg.sender][spender]);
+        return true;
+    }
+
     function transferFrom(
         address from,
         address to,
